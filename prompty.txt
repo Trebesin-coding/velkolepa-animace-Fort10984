@@ -1,1 +1,2 @@
 Sem patří použité prompty
+//prompt1: Write a function that check's if a key has been pressed and then if it's left arrow, right arrow, space bar and enter else nothing hapens
