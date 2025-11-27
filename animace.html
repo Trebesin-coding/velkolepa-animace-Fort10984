@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <style>
+            html,
+            body {
+                height: 100%;
+                overflow: hidden;
+            }
+
+            .wrapper {
+                position: relative;
+                height: 100vh;
+                display: flex;
+                justify-content: flex-start;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 30px;
+                align-items: flex-start;
+            }
+
+            .wrapper2 {
+                height: 100vh;
+                display: flex;
+                position: relative;
+                align-items: end;
+            }
+
+            .bottom {
+                width: 1860px;
+                height: 35px;
+                position: fixed;
+                bottom: 15px;
+                left: 0%;
+            }
+
+            .gun_bottom {
+                width: 25px;
+                height: 15px;
+                border: 3px rgb(0, 0, 255) solid;
+                bottom: 20px;
+                left: 50%;
+                position: fixed;
+                background-color: rgb(95, 95, 241);
+                transform: translateX(-50%);
+            }
+
+            .gun_top {
+                height: 8px;
+                width: 5px;
+                border: 2px rgb(0, 0, 225) solid;
+                background-color: rgb(95, 95, 241);
+                position: absolute;
+                top: -10px;
+                left: 8px;
+            }
+
+            .bullet {
+                height: 5px;
+                width: 3px;
+                background-color: rgb(0, 0, 0);
+                animation: bullet_move 2s linear;
+                position: fixed;
+            }
+
+            .alien {
+                height: 50px;
+                width: 80px;
+                animation: alien_sweep 15s linear;
+                position: relative;
+
+                transform-box: fill-box;
+                transform-origin: top left;
+            }
+            @keyframes alien_sweep {
+                0%   { transform: translate(60px,   0px); }
+                10%  { transform: translate(120px,  0px); }
+
+                20%  { transform: translate(120px, 150px); }
+                30%  { transform: translate(60px,  150px); }
+
+                40%  { transform: translate(60px,  300px); }
+                50%  { transform: translate(120px, 300px); }
+
+                60%  { transform: translate(120px, 450px); }
+                70%  { transform: translate(60px,  450px); }
+
+                80%  { transform: translate(60px,  600px); }
+                100% { transform: translate(60px,  900px); }
+            }
+
+
+            @keyframes bullet_move {
+                from {
+                    translate: 0 0;
+                }
+                to {
+                    translate: 0 -1200px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrapper">
+            <img class="alien" id="0" src="LargeAlien.png" alt="" />
+        </div>
+        <div class="wrapper2">
+            <div class="bottom"></div>
+        </div>
+        <div class="gun_bottom" id="gun">
+            <div class="gun_top">
+                <div class="bullet_spawn">
+                    <div class="bullet"></div>
+                </div>
+            </div>
+        </div>
+        <script>
+            const gun = document.getElementById("gun")
+            let posX = window.innerWidth / 2
+            const move = 10
+
+            function fireBullet() {
+                //prompt3: how can i make it so the bullet fires only afther i press the space bar and i can press the space bar multiple times
+                let bullet = document.createElement("div")
+                bullet.classList.add("bullet")
+
+                const gunRect = gun.getBoundingClientRect()
+                bullet.style.left = gunRect.left + gunRect.width / 2 + "px"
+                bullet.style.top = gunRect.top - 10 + "px"
+
+                document.body.appendChild(bullet)
+
+                bullet.addEventListener("animationend", () => bullet.remove())
+            }
+                //prompt4: how to make a collision detection for 1 png and 1 div
+            function isColliding(a, b) {
+                const rect1 = a.getBoundingClientRect();
+                const rect2 = b.getBoundingClientRect();
+
+                return !(
+                    rect1.right < rect2.left ||
+                    rect1.left > rect2.right ||
+                    rect1.bottom < rect2.top ||
+                    rect1.top > rect2.bottom
+                );
+            }
+
+            setInterval(() => {
+                const bullets = document.querySelectorAll(".bullet");
+                const aliens = document.querySelectorAll(".alien");
+
+                bullets.forEach(bullet => {
+                    aliens.forEach(alien => {
+                        if (isColliding(bullet, alien)) {
+                            bullet.remove();
+                            alien.remove();
+                        }
+                    });
+                });
+            }, 16);
+
+            setInterval(() => {
+                const aliens = document.querySelectorAll(".alien");
+                const bottom = document.querySelector(".bottom");
+
+                aliens.forEach(alien => {
+                    if (isColliding(alien, bottom)) {
+                        location.reload();
+                    }
+                });
+            }, 16);
+
+            function alien_spawn(count) {
+                const wrapper = document.querySelector(".wrapper")
+
+                for (i = 0; i < count; i++) {
+                    let alien = document.createElement("img")
+                    alien.classList.add("alien")
+                    alien.id = i
+                    alien.src = "LargeAlien.png"
+
+                    wrapper.appendChild(alien)
+                }
+            }
+
+            function handleKeyPress(event) {
+                //prompt1: Write a function that check's if a key has been pressed and then if it's left arrow, right arrow, space bar and enter else nothing hapens
+                switch (
+                    event.key //prompt2: How to move div from js via keypress in html
+                ) {
+                    case "ArrowLeft":
+                        posX = Math.max(0, posX - move)
+                        break
+
+                    case "ArrowRight":
+                        posX = Math.min(
+                            window.innerWidth - gun.offsetWidth,
+                            posX + move
+                        )
+                        break
+
+                    case " ":
+                    case "Spacebar":
+                        fireBullet()
+                        break
+                    case "Enter":
+                        location.reload()
+                        break
+                    default:
+                        return
+                }
+
+                gun.style.left = posX + "px"
+            }
+            document.addEventListener("keydown", handleKeyPress)
+            alien_spawn(13) //number + 1 (v wrapperu je jeden původní alien)
+        </script>
+    </body>
+</html>
