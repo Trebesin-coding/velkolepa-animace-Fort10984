@@ -2,3 +2,4 @@ Sem patří použité prompty
 //prompt1: Write a function that check's if a key has been pressed and then if it's left arrow, right arrow, space bar and enter else nothing hapens
 //prompt2: How to move div from js via keypress in html
 //prompt3: how can i make it so the bullet fires only afther i press the space bar and i can press the space bar multiple times
+//prompt4: how to make a collision detection for 1 png and 1 div
